@@ -1,0 +1,4 @@
+# ninja log v5
+0	615	1721919203929402740	/home/ssr/Projects/graspnet-baseline-main/knn/build/temp.linux-x86_64-cpython-37/home/ssr/Projects/graspnet-baseline-main/knn/src/cuda/knn.o	5d38a0660ec2787a
+0	9362	1721919212669579377	/home/ssr/Projects/graspnet-baseline-main/knn/build/temp.linux-x86_64-cpython-37/home/ssr/Projects/graspnet-baseline-main/knn/src/cpu/knn_cpu.o	1d67851cdc1ffd44
+0	16957	1721919220257732133	/home/ssr/Projects/graspnet-baseline-main/knn/build/temp.linux-x86_64-cpython-37/home/ssr/Projects/graspnet-baseline-main/knn/src/vision.o	4501598cf7ae01c4

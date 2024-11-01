@@ -1,0 +1,12 @@
+# ninja log v5
+1	8309	1721919173972791522	/home/ssr/Projects/graspnet-baseline-main/pointnet2/build/temp.linux-x86_64-cpython-37/_ext_src/src/ball_query_gpu.o	7387fda766889e80
+2	8462	1721919174128794729	/home/ssr/Projects/graspnet-baseline-main/pointnet2/build/temp.linux-x86_64-cpython-37/_ext_src/src/cylinder_query_gpu.o	349e11013ca961ea
+2	8491	1721919174156795305	/home/ssr/Projects/graspnet-baseline-main/pointnet2/build/temp.linux-x86_64-cpython-37/_ext_src/src/group_points_gpu.o	24769a0a9f5f2a08
+3	8504	1721919174168795551	/home/ssr/Projects/graspnet-baseline-main/pointnet2/build/temp.linux-x86_64-cpython-37/_ext_src/src/interpolate_gpu.o	81f3137fe6f5fae
+3	8707	1721919174368799662	/home/ssr/Projects/graspnet-baseline-main/pointnet2/build/temp.linux-x86_64-cpython-37/_ext_src/src/sampling_gpu.o	87597bfe3caa5d19
+1	14459	1721919180120917714	/home/ssr/Projects/graspnet-baseline-main/pointnet2/build/temp.linux-x86_64-cpython-37/_ext_src/src/ball_query.o	3ded7ddbddce45fd
+2	14596	1721919180256920500	/home/ssr/Projects/graspnet-baseline-main/pointnet2/build/temp.linux-x86_64-cpython-37/_ext_src/src/cylinder_query.o	6f3b606012cc16a6
+2	14604	1721919180264920663	/home/ssr/Projects/graspnet-baseline-main/pointnet2/build/temp.linux-x86_64-cpython-37/_ext_src/src/group_points.o	2bda21fe23d4e189
+3	14671	1721919180328921975	/home/ssr/Projects/graspnet-baseline-main/pointnet2/build/temp.linux-x86_64-cpython-37/_ext_src/src/sampling.o	7b60e1c30093d756
+3	14715	1721919180376922959	/home/ssr/Projects/graspnet-baseline-main/pointnet2/build/temp.linux-x86_64-cpython-37/_ext_src/src/interpolate.o	7b5234f271134d80
+1	18793	1721919184445006230	/home/ssr/Projects/graspnet-baseline-main/pointnet2/build/temp.linux-x86_64-cpython-37/_ext_src/src/bindings.o	260ca76f6f28dba8
