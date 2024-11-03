@@ -1,0 +1,31 @@
+# OpenAI设置
+openai:
+  api_key: "XXXXX"
+  model: "gpt-4"
+
+# 音频设置
+audio:
+  use_microphone: true
+  file_path: "../tests/test_audio.wav"
+  language: "zh-CN"
+
+# 麦克风设置
+microphone:
+  noise_duration: 2
+  timeout: 5
+  phrase_time_limit: 5
+
+# 提示词设置
+prompts:
+  system_prompt_path: "../config/system_prompt.txt"
+
+# 物体检测设置
+detection:
+  model_path: "models/yolov8n.pt"  # YOLOv8模型路径
+  depth:
+    min_distance: 0.1  # 最小深度阈值（米）
+    max_distance: 1.0  # 最大深度阈值（米）
+  camera:
+    width: 640
+    height: 480
+    fps: 30

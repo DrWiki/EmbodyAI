@@ -13,6 +13,7 @@ class RetargetClass():
                                    [0.0, 0.0, 1.0, 0.0],
                                    [0.0, 1.0, 0.0, 0.0],
                                    [0.0, 0.0, 0.0, 1.0]])
+
         elif arm_type == 'right':
             urdf_path = "D:/RemoteControl/robot/right_arm_2/right_arm_7.urdf"
             init_angle = np.zeros([8])
