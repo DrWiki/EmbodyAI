@@ -4,6 +4,8 @@ import cv2
 import open3d as o3d
 import threading
 import time
+from datetime import datetime
+import os
 
 class D435Camera:
     """
@@ -34,6 +36,11 @@ class D435Camera:
         self.vis = o3d.visualization.Visualizer()
         self.is_running = False
         self.point_cloud = o3d.geometry.PointCloud()
+        
+        # 创建保存文件夹
+        self.save_dir = "camera_data"
+        if not os.path.exists(self.save_dir):
+            os.makedirs(self.save_dir)
 
     def start(self):
         """
@@ -164,9 +171,45 @@ class D435Camera:
         self.vis.poll_events()
         self.vis.update_renderer()
 
+    def save_data(self, color_image, depth_image, pcd):
+        """
+        保存RGB图像、深度图和点云数据
+        :param color_image: RGB图像
+        :param depth_image: 深度图
+        :param pcd: 点云数据
+        """
+        try:
+            # 生成时间戳作为文件名
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            
+            # 为当前时间创建子文件夹
+            save_path = os.path.join(self.save_dir, timestamp)
+            if not os.path.exists(save_path):
+                os.makedirs(save_path)
+            
+            # 保存RGB图像
+            color_file = os.path.join(save_path, "color.png")
+            cv2.imwrite(color_file, color_image)
+            
+            # 保存深度图（以16位PNG格式保存以保持精度）
+            depth_file = os.path.join(save_path, "depth.png")
+            cv2.imwrite(depth_file, depth_image.astype(np.uint16))
+            
+            # 保存点云（以PCD格式保存）
+            pcd_file = os.path.join(save_path, "pointcloud.pcd")
+            o3d.io.write_point_cloud(pcd_file, pcd)
+            
+            print(f"数据已保存到文件夹: {save_path}")
+            return True
+            
+        except Exception as e:
+            print(f"保存数据失败: {e}")
+            return False
+
     def run(self):
         """
         运行相机并显示实时数据
+        按'q'退出，按's'保存当前帧数据
         """
         try:
             while True:
@@ -182,9 +225,12 @@ class D435Camera:
                 pcd = self.create_point_cloud(depth_image, color_image, camera_matrix)
                 self.update_point_cloud_visualization(pcd)
 
-                # 按'q'退出
-                if cv2.waitKey(1) & 0xFF == ord('q'):
+                # 检测键盘输入
+                key = cv2.waitKey(1) & 0xFF
+                if key == ord('q'):  # 按'q'退出
                     break
+                elif key == ord('s'):  # 按's'保存数据
+                    self.save_data(color_image, depth_image, pcd)
 
         finally:
             self.stop()
