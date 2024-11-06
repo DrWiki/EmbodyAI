@@ -41,6 +41,9 @@ class D435Camera:
         self.save_dir = "camera_data"
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
+        
+        # 打印可用分辨率
+        self.print_available_resolutions()
 
     def start(self):
         """
@@ -234,6 +237,51 @@ class D435Camera:
 
         finally:
             self.stop()
+
+    def print_available_resolutions(self):
+        """
+        打印D435相机支持的所有分辨率
+        """
+        try:
+            # 获取相机设备
+            ctx = rs.context()
+            devices = ctx.query_devices()
+            if len(devices) == 0:
+                print("未找到RealSense设备!")
+                return
+
+            device = devices[0]
+            
+            # 获取深度和彩色传感器
+            depth_sensor = device.first_depth_sensor()
+            color_sensor = device.first_color_sensor()
+
+            print("\n=== D435相机支持的分辨率 ===")
+            
+            # 打印深度传感器支持的分辨率
+            print("\n深度传感器支持的分辨率:")
+            for depth_stream in depth_sensor.get_stream_profiles():
+                if depth_stream.stream_type() == rs.stream.depth:
+                    video_stream = depth_stream.as_video_stream_profile()
+                    fps = video_stream.fps()
+                    width = video_stream.width()
+                    height = video_stream.height()
+                    format = video_stream.format()
+                    print(f"- {width}x{height} @ {fps}fps ({format})")
+
+            # 打印彩色传感器支持的分辨率
+            print("\n彩色传感器支持的分辨率:")
+            for color_stream in color_sensor.get_stream_profiles():
+                if color_stream.stream_type() == rs.stream.color:
+                    video_stream = color_stream.as_video_stream_profile()
+                    fps = video_stream.fps()
+                    width = video_stream.width()
+                    height = video_stream.height()
+                    format = video_stream.format()
+                    print(f"- {width}x{height} @ {fps}fps ({format})")
+
+        except Exception as e:
+            print(f"获取分辨率信息失败: {e}")
 
 def main():
     """
