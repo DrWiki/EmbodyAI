@@ -17,8 +17,8 @@ class D435Camera:
         初始化D435相机
         """
         # 初始化相机参数
-        self.width = 640
-        self.height = 480
+        self.width = 1920
+        self.height = 1080
         self.fps = 30
         
         # 初始化RealSense流水线
