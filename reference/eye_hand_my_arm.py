@@ -173,9 +173,111 @@ class EyeHandCalibrator:
                 break
 
     def calibrate(self):
-        """执行眼手标定"""
-        # 数据预处理和标定过程代码保持不变
-        ...
+        """
+        执行眼手标定
+        返回: (R, t) 相机到机械臂末端的旋转矩阵和平移向量
+        """
+        if len(self.R_t2c) < 3:
+            print("数据点不足，无法进行标定")
+            return None, None
+
+        try:
+            # 转换数据格式
+            R_gripper2base = np.array(self.g2b_R_seq).astype(np.float64)
+            t_gripper2base = np.array(self.g2b_T_seq).astype(np.float64)
+            R_target2cam = np.array(self.R_t2c).astype(np.float64)
+            t_target2cam = np.array(self.T_t2c).astype(np.float64)
+
+            print("数据形状检查:")
+            print(f"R_gripper2base shape: {R_gripper2base.shape}")
+            print(f"t_gripper2base shape: {t_gripper2base.shape}")
+            print(f"R_target2cam shape: {R_target2cam.shape}")
+            print(f"t_target2cam shape: {t_target2cam.shape}")
+
+            # 将旋转向量转换为旋转矩阵
+            R_g2b_matrices = []
+            for rvec in R_gripper2base:
+                rot = R.from_euler('xyz', rvec[0])
+                R_g2b_matrices.append(rot.as_matrix())
+            R_g2b_matrices = np.array(R_g2b_matrices)
+
+            R_t2c_matrices = []
+            for rvec in R_target2cam:
+                R_mat, _ = cv2.Rodrigues(rvec)
+                R_t2c_matrices.append(R_mat)
+            R_t2c_matrices = np.array(R_t2c_matrices)
+
+            # 执行标定
+            R_cam2gripper, t_cam2gripper = cv2.calibrateHandEye(
+                R_g2b_matrices,
+                t_gripper2base,
+                R_t2c_matrices,
+                t_target2cam,
+                method=cv2.CALIB_HAND_EYE_PARK
+            )
+
+            print("\n标定完成!")
+            print("使用的数据点数量:", len(self.R_t2c))
+            print("标定方法: CALIB_HAND_EYE_PARK")
+            
+            # 计算重投影误差
+            error = self.calculate_reprojection_error(
+                R_cam2gripper, t_cam2gripper,
+                R_g2b_matrices, t_gripper2base,
+                R_t2c_matrices, t_target2cam
+            )
+            print(f"重投影误差: {error}")
+
+            return R_cam2gripper, t_cam2gripper
+
+        except Exception as e:
+            print(f"标定过程出错: {e}")
+            import traceback
+            traceback.print_exc()
+            return None, None
+
+    def calculate_reprojection_error(self, R_cam2gripper, t_cam2gripper,
+                                   R_g2b, t_g2b, R_t2c, t_t2c):
+        """
+        计算标定结果的重投影误差
+        """
+        error = 0
+        n_points = len(R_g2b)
+        
+        for i in range(n_points):
+            # 计算预测的标定板位置
+            H_pred = np.eye(4)
+            H_pred[:3, :3] = R_g2b[i] @ R_cam2gripper
+            H_pred[:3, 3] = (R_g2b[i] @ t_cam2gripper + t_g2b[i].flatten())
+            
+            # 计算实际的标定板位置
+            H_actual = np.eye(4)
+            H_actual[:3, :3] = R_t2c[i]
+            H_actual[:3, 3] = t_t2c[i].flatten()
+            
+            # 计算误差
+            error += np.linalg.norm(H_pred[:3, 3] - H_actual[:3, 3])
+        
+        return error / n_points
+
+    def draw_axis(self, img, rvec, tvec):
+        """
+        在图像上绘制3D坐标轴
+        """
+        axis_length = 0.1  # 坐标轴长度（米）
+        imgpts, _ = cv2.projectPoints(
+            np.float32([[0,0,0], [axis_length,0,0], [0,axis_length,0], [0,0,axis_length]]),
+            rvec, tvec, self.camera_matrix, self.dist_coeffs
+        )
+        
+        origin = tuple(map(int, imgpts[0].ravel()))
+        x_end = tuple(map(int, imgpts[1].ravel()))
+        y_end = tuple(map(int, imgpts[2].ravel()))
+        z_end = tuple(map(int, imgpts[3].ravel()))
+        
+        cv2.line(img, origin, x_end, (0,0,255), 3)  # X轴为红色
+        cv2.line(img, origin, y_end, (0,255,0), 3)  # Y轴为绿色
+        cv2.line(img, origin, z_end, (255,0,0), 3)  # Z轴为蓝色
 
     def cleanup(self):
         """清理资源"""
